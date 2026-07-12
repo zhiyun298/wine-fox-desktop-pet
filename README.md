@@ -3,7 +3,7 @@
 ## 快速开始
 在Release下载任意一种版本，安装或打开，不需要任何依赖。
 
-你可以安装[Llmstudio](https://lmstudio.ai/download)或在[VectorEngine](https://vectorengine.ai/)注册（这家的API价格不贵，不过你也可以使用别的API提供商或中转站）以使用AI服务。
+你可以安装[Llmstudio](https://lmstudio.ai/download)或使用API提供商以使用AI服务。
 
 应用的个性化设置可以在右键菜单->设置里修改
 
@@ -36,11 +36,13 @@ pnpm install
 
    | 项 | 描述 | 举例 |
    | ---|---|--- |
-   | baseURL | BaseURL | `https://example.com/v1` |
-   | apiKey | API Key | `sk-your-api-key-here` |
+   | baseURL | API提供商的BaseURL | `https://example.com/v1` |
+   | apiKey | 你的API Key | `sk-your-api-key-here` |
    | chatModel | 聊天使用的模型 | `deepseek-v4-flash` |
    | visionModel | 图像分析使用的模型 | `doubao-seed-2-0-lite` |
    | agentCwd | Claude Code的工作目录 | `D:\` |
+
+   **注意：您要确保你的API提供商同时包含可供聊天使用的模型和可供图像分析使用的模型**
 
 4. 运行
 ```bash
