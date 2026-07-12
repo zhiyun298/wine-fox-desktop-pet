@@ -135,8 +135,16 @@
       <div class="hint">输入框与所有气泡统一使用此宽度和停靠方向。</div>
     </div>
 
-    <h2>模型</h2>
+    <h2>API 接口</h2>
     <div class="card">
+      <div class="row">
+        <span>API 地址</span>
+        <input type="text" id="cloudBaseURL" placeholder="https://api.xxx.com/v1(留空用默认)" style="width:200px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
+      </div>
+      <div class="row">
+        <span>API Key</span>
+        <input type="password" id="cloudApiKey" placeholder="sk-…(留空用 secret.json)" style="width:200px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
+      </div>
       <div class="row">
         <span>聊天</span>
         <span style="display:flex;align-items:center;gap:4px">
@@ -163,6 +171,7 @@
           <input type="text" id="visionModelCustom" style="width:110px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;display:none" placeholder="输入模型名" />
         </span>
       </div>
+      <div class="hint">OpenAI 兼容接口。聊天用「云端」后端时走这里;截图识图(屏幕感知)始终走这里。留空回退到 secret.json / 环境变量。</div>
     </div>
 
     <h2>AI 后端</h2>
@@ -175,20 +184,7 @@
           <option value="lms">拉起 lms(自动管理)</option>
         </select>
       </div>
-      <div class="hint">仅聊天走所选后端;截图识图始终走云端。</div>
-
-      <!-- 云端(中转站):在此填 API 地址与密钥(优先级最高,免重启) -->
-      <div id="grp-cloud" style="display:none">
-        <div class="row">
-          <span>API 地址</span>
-          <input type="text" id="cloudBaseURL" placeholder="https://api.xxx.com/v1(留空用默认)" style="width:200px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
-        </div>
-        <div class="row">
-          <span>API Key</span>
-          <input type="password" id="cloudApiKey" placeholder="sk-…(留空用 secret.json)" style="width:200px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
-        </div>
-        <div class="hint">OpenAI 兼容接口地址与密钥。留空则回退到 secret.json / 环境变量。截图识图也用这里的配置。</div>
-      </div>
+      <div class="hint">仅聊天走所选后端;截图识图始终走「API 接口」里的云端配置。</div>
 
       <!-- 连接 LM Studio:仅连接已运行的本地服务器 -->
       <div id="grp-lmstudio" style="display:none">
@@ -661,7 +657,6 @@
 
       // ---- AI 后端 ----
       const chatBackend = document.getElementById('chatBackend');
-      const grpCloud = document.getElementById('grp-cloud');
       const cloudBaseURL = document.getElementById('cloudBaseURL');
       const cloudApiKey = document.getElementById('cloudApiKey');
       const grpLmstudio = document.getElementById('grp-lmstudio');
@@ -684,7 +679,6 @@
 
       function applyBackendVisibility() {
         const v = chatBackend.value;
-        grpCloud.style.display = v === 'cloud' ? '' : 'none';
         grpLmstudio.style.display = v === 'lmstudio' ? '' : 'none';
         grpLms.style.display = v === 'lms' ? '' : 'none';
         grpCommon.style.display = (v === 'lmstudio' || v === 'lms') ? '' : 'none';
