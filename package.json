@@ -27,6 +27,7 @@
 	"build": {
 		"appId": "com.winefox.desktop",
 		"productName": "酒狐",
+		"artifactName": "wine-fox-${version}-${os}.${ext}",
 		"directories": {
 			"output": "release"
 		},
@@ -41,7 +42,8 @@
 		"win": {
 			"target": [
 				"nsis",
-				"portable"
+				"portable",
+				"zip"
 			]
 		},
 		"nsis": {
