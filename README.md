@@ -3,11 +3,14 @@
 ## 快速开始
 在Release下载任意一种版本，安装或打开，不需要任何依赖。
 
-你可以安装[Llmstudio](https://lmstudio.ai/download)或使用API提供商以使用AI服务。
+你可以安装[Lmstudio](https://lmstudio.ai/download)或使用API提供商以使用AI服务。
+
+如果你不使用lmstudio，需要在`右键菜单->设置->AI 后端`里选择`云端`，随后配置相关信息。
 
 应用的个性化设置可以在右键菜单->设置里修改
 
 **特别提示：左键长按可以唤出聊天框，以`/`开头的消息将会被转交给Claude Code CLI（如果你安装了），这可以用于执行临时快速简单的任务。**
+**安全警告：`/` Agent 会以 `bypassPermissions`（无护栏）模式在工作目录运行 `claude` CLI。**
 
 聊天框的命令：
 - `!p`或`!previous`，用于查看上一条消息
@@ -15,9 +18,10 @@
 
 ## 从源码运行
 ### 环境要求
+- **[Node.js](https://nodejs.org/zh-cn/download) >= 18**
 - **[npm](https://www.npmjs.com/)**
 - **pnpm**
-- **[Llmstudio](https://lmstudio.ai/download)（可选）**
+- **[Lmstudio](https://lmstudio.ai/download)（可选）**
 - **Claude Code（可选）**
 
 ### 安装依赖并运行
@@ -40,11 +44,13 @@ pnpm install
    | apiKey | 你的API Key | `sk-your-api-key-here` |
    | chatModel | 聊天使用的模型 | `deepseek-v4-flash` |
    | visionModel | 图像分析使用的模型 | `doubao-seed-2-0-lite` |
-   | agentCwd | Claude Code的工作目录 | `D:\` |
+   | agentCwd | Claude Code的工作目录 | `D:\\` |
 
    **注意：您要确保你的API提供商同时包含可供聊天使用的模型和可供图像分析使用的模型**
 
-4. 运行
+   **如果你使用lmstudio，则无需配置secret.json，只需稍后在`右键菜单->设置->AI 后端`里选择`lmstudio`或lms**
+
+5. 运行
 ```bash
 pnpm app
 ```
