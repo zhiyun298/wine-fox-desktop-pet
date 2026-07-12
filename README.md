@@ -63,7 +63,7 @@ pnpm app
 - **项目基于[`ctrlkk/wine-fox`](https://github.com/ctrlkk/wine-fox)为MIT许可.**
 - **[`ctrlkk/wine-fox`](https://github.com/ctrlkk/wine-fox)包含的`wine fox`模型许可证为[CC-BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), 来自[Yes Steve Model](https://modrinth.com/mod/yes-steve-model).**
 
-详见`THIRD-PARTY-NOTICES.md`.
+详见`THIRD-PARTY-NOTICES.md`。
 
 ## 免责声明
 本项目仅供学习与个人非商业使用。使用 AI 功能需自备第三方接口，产生的费用与内容由使用者自行负责。
