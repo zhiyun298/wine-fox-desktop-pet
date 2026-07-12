@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>酒狐 · 设置</title>
+    <style>
+      :root { color-scheme: light dark; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        font: 13px/1.5 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+        background: #f4f4f6;
+        color: #222;
+        padding: 16px 18px;
+        box-sizing: border-box;
+        overflow-y: auto;
+      }
+      @media (prefers-color-scheme: dark) {
+        body { background: #26262b; color: #eee; }
+        .card { background: #2f2f36 !important; box-shadow: none !important; }
+        input, textarea, select { background: #3a3a42; color: #eee; border-color: #555; }
+      }
+      h2 { font-size: 14px; margin: 14px 0 8px; font-weight: 600; }
+      .card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 12px 14px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+        margin-bottom: 12px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 0;
+      }
+      .row + .row { border-top: 1px solid rgba(128,128,128,0.18); }
+      .label { display: flex; align-items: center; gap: 9px; }
+      .swatch {
+        width: 44px; height: 24px; border-radius: 6px;
+        border: 1px solid rgba(128,128,128,0.35);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 11px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      }
+      input[type="color"] {
+        width: 40px; height: 28px; padding: 0; border: none;
+        background: none; cursor: pointer;
+      }
+      .slider-val { min-width: 36px; text-align: right; font-variant-numeric: tabular-nums; }
+      input[type="range"] { flex: 1; max-width: 100px; }
+      .deg-input { width: 48px; font: inherit; text-align: right; border-radius: 4px; border: 1px solid rgba(128,128,128,0.35); background: transparent; color: inherit; padding: 1px 3px; }
+      .reset-btn {
+        font-size: 13px; padding: 1px 5px; border-radius: 4px; line-height: 1;
+        border: 1px solid rgba(128,128,128,0.35); background: transparent;
+        cursor: pointer; color: inherit;
+      }
+      .reset-btn:hover { background: rgba(128,128,128,0.15); }
+      textarea {
+        width: 100%; box-sizing: border-box; resize: vertical;
+        font: inherit; padding: 8px; border-radius: 6px;
+        border: 1px solid rgba(128,128,128,0.35);
+      }
+      .checkbox-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+      .hint { font-size: 11px; color: #888; margin-top: 2px; }
+      .mem-entry {
+        display: flex; align-items: flex-start; gap: 6px;
+        padding: 4px 0; font-size: 12px;
+        border-bottom: 1px solid rgba(128,128,128,0.12);
+      }
+      .mem-time { color: #888; white-space: nowrap; min-width: 80px; font-variant-numeric: tabular-nums; }
+      .mem-role {
+        font-weight: 600; min-width: 28px; font-size: 11px;
+        padding: 1px 4px; border-radius: 3px; text-align: center;
+      }
+      .mem-role.user { background: #3a6bcc; color: #fff; }
+      .mem-role.assistant { background: #c05a2c; color: #fff; }
+      .mem-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.85; }
+      .mem-del {
+        font-size: 11px; padding: 0 5px; border-radius: 3px; cursor: pointer;
+        border: 1px solid rgba(128,128,128,0.3); background: transparent; color: inherit;
+        white-space: nowrap; line-height: 1.6;
+      }
+      .mem-del:hover { background: rgba(220,50,50,0.2); border-color: rgba(220,50,50,0.5); }
+      .mem-actions { display: flex; gap: 8px; margin-bottom: 6px; }
+      .fold-toggle {
+        display: flex; align-items: center; gap: 4px; cursor: pointer;
+        color: #888; font-size: 12px; user-select: none; padding: 2px 0;
+      }
+      .fold-arrow { transition: transform 0.2s; display: inline-block; }
+      .fold-toggle.open .fold-arrow { transform: rotate(90deg); }
+    </style>
+  </head>
+  <body>
+    <h2>回复气泡颜色</h2>
+    <div class="card">
+      <div class="row">
+        <div class="label">
+          <span class="swatch" id="chat-swatch">酒狐</span>
+          <span>聊天回复</span>
+        </div>
+        <input type="color" id="chat-color" />
+      </div>
+      <div class="row">
+        <div class="label">
+          <span class="swatch" id="agent-swatch">/</span>
+          <span>Agent 回复</span>
+        </div>
+        <input type="color" id="agent-color" />
+      </div>
+      <div class="row">
+        <div class="label">
+          <span class="swatch" id="hint-swatch">?</span>
+          <span>提示泡</span>
+        </div>
+        <input type="color" id="hint-color" />
+      </div>
+    </div>
+
+    <h2>气泡布局</h2>
+    <div class="card">
+      <div class="row">
+        <span>宽度占比</span>
+        <span>
+          <input type="range" id="bubbleWidth" min="10" max="90" step="5" />
+          <span class="slider-val" id="bubble-width-val">60%</span>
+        </span>
+      </div>
+      <div class="row">
+        <span>停靠</span>
+        <select id="bubbleAlign" style="width:90px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;">
+          <option value="left">左侧</option>
+          <option value="right">右侧</option>
+        </select>
+      </div>
+      <div class="hint">输入框与所有气泡统一使用此宽度和停靠方向。</div>
+    </div>
+
+    <h2>模型</h2>
+    <div class="card">
+      <div class="row">
+        <span>聊天</span>
+        <span style="display:flex;align-items:center;gap:4px">
+          <select id="chatModel" style="width:130px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;">
+            <option value="">默认</option>
+            <option value="deepseek-v4-flash">deepseek-v4-flash</option>
+            <option value="deepseek-v3.1">deepseek-v3.1</option>
+            <option value="gpt-4.1-nano-2025-04-14">gpt-4.1-nano-2025-04-14</option>
+            <option value="__custom__">自定义…</option>
+          </select>
+          <input type="text" id="chatModelCustom" style="width:110px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;display:none" placeholder="输入模型名" />
+        </span>
+      </div>
+      <div class="row">
+        <span>截图分析</span>
+        <span style="display:flex;align-items:center;gap:4px">
+          <select id="visionModel" style="width:130px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;">
+            <option value="">默认</option>
+            <option value="doubao-seed-2-0-lite-260215">doubao-seed-2-0-lite-260215</option>
+            <option value="doubao-seed-2-0-mini-260215">doubao-seed-2-0-mini-260215</option>
+            <option value="gpt-4.1-nano">gpt-4.1-nano</option>
+            <option value="__custom__">自定义…</option>
+          </select>
+          <input type="text" id="visionModelCustom" style="width:110px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;display:none" placeholder="输入模型名" />
+        </span>
+      </div>
+    </div>
+
+    <h2>AI 后端</h2>
+    <div class="card">
+      <div class="row">
+        <span>聊天后端</span>
+        <select id="chatBackend" style="width:180px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;">
+          <option value="cloud">云端(中转站)</option>
+          <option value="lmstudio">连接 LM Studio</option>
+          <option value="lms">拉起 lms(自动管理)</option>
+        </select>
+      </div>
+      <div class="hint">仅聊天走所选后端;截图识图始终走云端。</div>
+
+      <!-- 连接 LM Studio:仅连接已运行的本地服务器 -->
+      <div id="grp-lmstudio" style="display:none">
+        <div class="row">
+          <span>服务地址</span>
+          <input type="text" id="externalBaseURL" placeholder="http://127.0.0.1:1234/v1" style="width:200px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
+        </div>
+        <div class="row">
+          <span>模型名</span>
+          <input type="text" id="externalModel" placeholder="留空=当前加载的" style="width:200px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
+        </div>
+        <div class="hint">先在 LM Studio 里开启本地服务器(默认端口 1234)并加载好模型,这里只做连接。</div>
+      </div>
+
+      <!-- 拉起 lms:用 LM Studio CLI 自动起服务 + 加载模型 -->
+      <div id="grp-lms" style="display:none">
+        <div class="row">
+          <span>模型 key</span>
+          <span style="display:flex;align-items:center;gap:6px">
+            <select id="lmsModel" style="width:170px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;"></select>
+            <button class="reset-btn" id="lms-refresh-models">刷新</button>
+          </span>
+        </div>
+        <div class="hint">本地已下载的模型(点「刷新」列出)。</div>
+        <div class="row">
+          <span>端口</span>
+          <input type="number" id="lmsPort" min="1024" max="65535" style="width:90px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
+        </div>
+        <div class="row">
+          <span>GPU 卸载</span>
+          <input type="text" id="lmsGpu" placeholder="max" style="width:90px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
+        </div>
+        <div class="hint">max=尽量上 GPU;off=纯 CPU;或填 0~1 比例。GTX 1650Ti 可用 max。</div>
+        <div class="row">
+          <span>上下文长度</span>
+          <input type="number" id="lmsCtx" min="512" max="131072" step="512" style="width:90px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
+        </div>
+        <div class="row">
+          <span>空闲卸载(秒)</span>
+          <input type="number" id="lmsTtl" min="0" max="86400" step="10" style="width:90px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
+        </div>
+        <div class="hint">0=不自动卸载。设了则空闲多少秒后释放显存。</div>
+        <div class="row">
+          <span>服务</span>
+          <span style="display:flex;align-items:center;gap:6px">
+            <button class="reset-btn" id="lms-start">启动</button>
+            <button class="reset-btn" id="lms-stop">停止</button>
+            <span id="lms-status" style="font-size:12px;opacity:0.8">stopped</span>
+          </span>
+        </div>
+        <div class="hint">需已安装 LM Studio 且 <code>lms</code> 在 PATH 中。切到「拉起 lms」后自动起服务并加载模型。</div>
+        <div class="fold-toggle" id="lms-log-fold">
+          <span class="fold-arrow">&#9654;</span> 运行日志
+        </div>
+        <pre id="lms-log" style="display:none;max-height:160px;overflow:auto;font:11px/1.4 Consolas,'Cascadia Mono','Courier New',monospace;white-space:pre;background:rgba(0,0,0,0.18);padding:6px;border-radius:4px;margin:4px 0"></pre>
+      </div>
+
+      <!-- 回复上限:lmstudio / lms 生效 -->
+      <div id="grp-backend-common" style="display:none">
+        <div class="row">
+          <span>回复上限(token)</span>
+          <input type="number" id="localMaxTokens" min="0" max="4096" step="10" style="width:90px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;" />
+        </div>
+        <div class="hint">0=不限。设 120 左右让她短平快,秒回体感最大杠杆。</div>
+      </div>
+    </div>
+
+    <h2>聊天行为</h2>
+    <div class="card">
+      <div class="row">
+        <span>Temperature</span>
+        <span>
+          <input type="range" id="temperature" min="0" max="2" step="0.05" />
+          <span class="slider-val" id="temp-val">0.65</span>
+        </span>
+      </div>
+      <div class="hint">越低越冷静/稳定,越高越"发烧"/随机。默认 0.65。</div>
+      <div class="checkbox-row" style="margin-top:6px">
+        <input type="checkbox" id="showActions" />
+        <label for="showActions">允许 *动作描述*(角色扮演)</label>
+      </div>
+      <div class="hint">关掉后回复为纯对话,不含 *晃尾巴* / [叹气] 等文字动作。</div>
+      <div class="checkbox-row" style="margin-top:6px">
+        <input type="checkbox" id="showAnimTags" />
+        <label for="showAnimTags">允许触发动画(AI 按情绪做动作)</label>
+      </div>
+      <div class="hint">关掉后 AI 不再用 [anim:…] 标记触发狐狸做动作(与上面的文字动作互相独立)。</div>
+    </div>
+
+    <h2>主动搭话</h2>
+    <div class="card">
+      <div class="checkbox-row">
+        <input type="checkbox" id="proactive" />
+        <label for="proactive">启用主动搭话</label>
+        <button class="reset-btn" id="try-proactive" style="margin-left:8px">立刻试试</button>
+      </div>
+      <div class="row">
+        <span>空闲触发(参考值)</span>
+        <span>
+          <input type="range" id="proactiveIdleMin" min="1" max="30" step="1" />
+          <span class="slider-val" id="idle-val">5 分</span>
+        </span>
+      </div>
+      <div class="hint">未与她交互(聊天/坐站)超过设定时间后,酒狐主动搭话。</div>
+      <div class="checkbox-row" style="margin-top:6px">
+        <input type="checkbox" id="screenPerception" />
+        <label for="screenPerception">屏幕感知(搭话时截图分析)</label>
+      </div>
+      <div class="hint">开启后搭话前会截图分析你在做什么,更自然。涉及隐私,默认关闭。</div>
+      <div class="fold-toggle" id="prompt-fold">
+        <span class="fold-arrow">&#9654;</span> 识图提示词
+      </div>
+      <div id="prompt-area" style="display:none">
+        <textarea id="screenshotPrompt" rows="4" style="width:100%;box-sizing:border-box;resize:vertical;font:inherit;padding:6px;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit"></textarea>
+        <div class="hint" style="margin-bottom:4px">修改后即生效。清空恢复默认。</div>
+      </div>
+      <div class="row">
+        <span>截图质量</span>
+        <span>
+          <input type="range" id="screenshotQuality" min="50" max="100" step="5" />
+          <span class="slider-val" id="quality-val">70%</span>
+        </span>
+      </div>
+      <div class="checkbox-row" style="margin-top:6px">
+        <input type="checkbox" id="proactiveUseMaster" />
+        <label for="proactiveUseMaster">使用"主人"称呼</label>
+      </div>
+      <div class="hint">关闭后主动搭话提示词不使用"主人"前缀,适合改了人设的场景。</div>
+    </div>
+
+    <h2>显示</h2>
+    <div class="card">
+      <div class="checkbox-row">
+        <input type="checkbox" id="showDebug" />
+        <label for="showDebug">调试信息</label>
+      </div>
+      <div class="row">
+        <span>相机俯仰</span>
+        <span>
+          <input type="range" id="camPitch" min="-180" max="180" step="1" />
+          <input type="number" class="deg-input" id="pitch-val" value="0" min="-180" max="180" />
+          <button class="reset-btn" id="reset-pitch" title="恢复默认">↺</button>
+        </span>
+      </div>
+      <div class="hint">正值=俯视,负值=仰视。</div>
+      <div class="row">
+        <span>相机偏航</span>
+        <span>
+          <input type="range" id="camYaw" min="-180" max="180" step="1" />
+          <input type="number" class="deg-input" id="yaw-val" value="0" min="-180" max="180" />
+          <button class="reset-btn" id="reset-yaw" title="恢复默认">↺</button>
+        </span>
+      </div>
+      <div class="hint">正值=右偏,负值=左偏。</div>
+      <div class="row">
+        <span>相机滚转</span>
+        <span>
+          <input type="range" id="camRoll" min="-180" max="180" step="1" />
+          <input type="number" class="deg-input" id="roll-val" value="0" min="-180" max="180" />
+          <button class="reset-btn" id="reset-roll" title="恢复默认">↺</button>
+        </span>
+      </div>
+      <div class="hint">正值=顺时针歪头,负值=逆时针。</div>
+    </div>
+
+    <h2>动画</h2>
+    <div class="card">
+      <div class="checkbox-row">
+        <input type="checkbox" id="randomAction" />
+        <label for="randomAction">自动随机动作</label>
+      </div>
+      <div class="row">
+        <span>随机风格</span>
+        <select id="randomStyle" style="width:150px;font:inherit;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;padding:2px 4px;">
+          <option value="custom">自定义(勾选子集)</option>
+          <option value="classic">原版</option>
+        </select>
+      </div>
+      <div class="hint" id="random-style-hint">自定义:从下面勾「自发」的动画里等概率随机。原版:库自带的心情加权 + 苹果吃/酒瓶喝 + 大概率不动(此模式下「自发」勾选不生效,但「间隔」生效)。</div>
+      <div class="row">
+        <span>间隔</span>
+        <span>
+          <input type="range" id="randomActionSec" min="10" max="300" step="5" />
+          <span class="slider-val" id="random-sec-val">60s</span>
+          <button type="button" id="randomSecReset" style="margin-left:6px;font:inherit;padding:1px 6px;border-radius:4px;border:1px solid rgba(128,128,128,0.35);background:transparent;color:inherit;cursor:pointer;">恢复默认</button>
+        </span>
+      </div>
+      <div class="hint">关掉「自动随机动作」她不再自发做动作。勾选各动画的「自发」可控制哪些能被随机触发;点 ▶ 预览。</div>
+      <div id="anim-list" style="max-height:220px;overflow-y:auto"></div>
+      <div class="hint" id="anim-empty">加载中…</div>
+    </div>
+
+    <h2>自定义人设</h2>
+    <div class="card">
+      <textarea id="persona" rows="5" placeholder="留空 = 用默认酒狐人设&#10;(金黄长发狐娘,俏皮亲昵,称呼主人,爱葡萄酒…）"></textarea>
+      <div class="hint">改后即生效,重启仍在。清空文本恢复默认。</div>
+    </div>
+
+    <h2>记忆管理</h2>
+    <div class="card">
+      <div class="mem-actions">
+        <button class="reset-btn" id="mem-refresh">刷新</button>
+        <button class="reset-btn" id="mem-clear-all" style="border-color:rgba(220,50,50,0.4)">清空全部</button>
+      </div>
+      <div id="mem-list" style="max-height:260px;overflow-y:auto"></div>
+      <div class="hint" id="mem-empty">暂无记忆。</div>
+    </div>
+
+    <script>
+      const DEFAULT_SCREENSHOT_PROMPT = '用中文详细描述这张屏幕截图。包括:正在运行的应用程序、打开的窗口标题、大致内容(文字/图片/代码等)、以及当前可能在进行什么操作。描述要具体,直接说,不要前缀。';
+
+      const chatInp = document.getElementById('chat-color');
+      const agentInp = document.getElementById('agent-color');
+      const chatSwatch = document.getElementById('chat-swatch');
+      const agentSwatch = document.getElementById('agent-swatch');
+      const hintSwatch = document.getElementById('hint-swatch');
+      const hintColorInput = document.getElementById('hint-color');
+      const tempSlider = document.getElementById('temperature');
+      const tempVal = document.getElementById('temp-val');
+      const showActions = document.getElementById('showActions');
+      const showAnimTags = document.getElementById('showAnimTags');
+      const persona = document.getElementById('persona');
+      const chatModel = document.getElementById('chatModel');
+      const chatModelCustom = document.getElementById('chatModelCustom');
+      const visionModel = document.getElementById('visionModel');
+      const visionModelCustom = document.getElementById('visionModelCustom');
+
+      function getModelValue(sel, custom) {
+        return sel.value === '__custom__' ? custom.value.trim() : sel.value;
+      }
+      function setModelValue(sel, custom, saved) {
+        if (!saved) { sel.value = ''; custom.style.display = 'none'; return; }
+        for (const opt of sel.options) {
+          if (opt.value === saved) { sel.value = saved; custom.style.display = 'none'; return; }
+        }
+        sel.value = '__custom__';
+        custom.value = saved;
+        custom.style.display = '';
+      }
+      function bindModelSelect(sel, custom, key) {
+        sel.addEventListener('change', () => {
+          custom.style.display = sel.value === '__custom__' ? '' : 'none';
+          window.settingsAPI.set({ [key]: getModelValue(sel, custom) });
+        });
+        custom.addEventListener('change', () => {
+          window.settingsAPI.set({ [key]: custom.value.trim() });
+        });
+      }
+      bindModelSelect(chatModel, chatModelCustom, 'chatModel');
+      bindModelSelect(visionModel, visionModelCustom, 'visionModel');
+      const proactive = document.getElementById('proactive');
+      const proactiveIdleMin = document.getElementById('proactiveIdleMin');
+      const idleVal = document.getElementById('idle-val');
+      const tryProactive = document.getElementById('try-proactive');
+      const screenshotQuality = document.getElementById('screenshotQuality');
+      const qualityVal = document.getElementById('quality-val');
+      const bubbleWidth = document.getElementById('bubbleWidth');
+      const bubbleWidthVal = document.getElementById('bubble-width-val');
+      const bubbleAlign = document.getElementById('bubbleAlign');
+      const promptFold = document.getElementById('prompt-fold');
+      const promptArea = document.getElementById('prompt-area');
+      const screenshotPrompt = document.getElementById('screenshotPrompt');
+      const screenPerception = document.getElementById('screenPerception');
+      const proactiveUseMaster = document.getElementById('proactiveUseMaster');
+      const showDebug = document.getElementById('showDebug');
+      const camPitch = document.getElementById('camPitch');
+      const camYaw = document.getElementById('camYaw');
+      const camRoll = document.getElementById('camRoll');
+      const pitchVal = document.getElementById('pitch-val');
+      const yawVal = document.getElementById('yaw-val');
+      const rollVal = document.getElementById('roll-val');
+
+      function paint() {
+        chatSwatch.style.background = chatInp.value;
+        agentSwatch.style.background = agentInp.value;
+        hintSwatch.style.background = hintColorInput.value;
+      }
+
+      (async () => {
+        const s = await window.settingsAPI.get();
+        chatInp.value = s.chatColor;
+        agentInp.value = s.agentColor;
+        hintColorInput.value = s.hintColor || '#555555';
+        tempSlider.value = s.temperature ?? 0.65;
+        tempVal.textContent = Number(tempSlider.value).toFixed(2);
+        showActions.checked = s.showActions !== false;
+        showAnimTags.checked = s.showAnimTags !== false;
+        persona.value = s.persona || '';
+        setModelValue(chatModel, chatModelCustom, s.chatModel || '');
+        setModelValue(visionModel, visionModelCustom, s.visionModel || '');
+        showDebug.checked = s.showDebug === true;
+        proactive.checked = s.proactive === true;
+        proactiveIdleMin.value = s.proactiveIdleMin ?? 5;
+        idleVal.textContent = proactiveIdleMin.value + ' 分';
+        screenshotQuality.value = s.screenshotQuality ?? 70;
+        qualityVal.textContent = screenshotQuality.value + '%';
+        bubbleWidth.value = s.bubbleWidth ?? 60;
+        bubbleWidthVal.textContent = bubbleWidth.value + '%';
+        bubbleAlign.value = s.bubbleAlign || 'left';
+        screenshotPrompt.value = s.screenshotPrompt || DEFAULT_SCREENSHOT_PROMPT;
+        screenPerception.checked = s.screenPerception === true;
+        proactiveUseMaster.checked = s.proactiveUseMaster !== false;
+        camPitch.value = s.camPitch ?? 0; pitchVal.value = camPitch.value;
+        camYaw.value = s.camYaw ?? 0;     yawVal.value = camYaw.value;
+        camRoll.value = s.camRoll ?? 0;   rollVal.value = camRoll.value;
+        paint();
+      })();
+
+      chatInp.addEventListener('input', () => { paint(); window.settingsAPI.set({ chatColor: chatInp.value }); });
+      agentInp.addEventListener('input', () => { paint(); window.settingsAPI.set({ agentColor: agentInp.value }); });
+      hintColorInput.addEventListener('input', () => { paint(); window.settingsAPI.set({ hintColor: hintColorInput.value }); });
+      bubbleWidth.addEventListener('input', () => {
+        bubbleWidthVal.textContent = bubbleWidth.value + '%';
+        window.settingsAPI.set({ bubbleWidth: Number(bubbleWidth.value) });
+      });
+      bubbleAlign.addEventListener('change', () => {
+        window.settingsAPI.set({ bubbleAlign: bubbleAlign.value });
+      });
+      tempSlider.addEventListener('input', () => {
+        const v = Number(tempSlider.value);
+        tempVal.textContent = v.toFixed(2);
+        window.settingsAPI.set({ temperature: v });
+      });
+      showActions.addEventListener('change', () => {
+        window.settingsAPI.set({ showActions: showActions.checked });
+      });
+      showAnimTags.addEventListener('change', () => {
+        window.settingsAPI.set({ showAnimTags: showAnimTags.checked });
+      });
+      persona.addEventListener('change', () => {
+        window.settingsAPI.set({ persona: persona.value });
+      });
+      showDebug.addEventListener('change', () => {
+        window.settingsAPI.set({ showDebug: showDebug.checked });
+      });
+      proactive.addEventListener('change', () => {
+        window.settingsAPI.set({ proactive: proactive.checked });
+      });
+      tryProactive.addEventListener('click', () => {
+        tryProactive.disabled = true;
+        tryProactive.textContent = '…';
+        window.settingsAPI.tryProactive();
+      });
+      window.settingsAPI.onTryProactiveProgress((text) => {
+        tryProactive.textContent = text;
+      });
+      window.settingsAPI.onTryProactiveResult(({ ok, msg }) => {
+        tryProactive.textContent = ok ? '已发送' : ('失败:' + msg.slice(0, 10));
+        tryProactive.disabled = false;
+        setTimeout(() => { tryProactive.textContent = '立刻试试'; }, 2000);
+      });
+      proactiveIdleMin.addEventListener('input', () => {
+        const v = Number(proactiveIdleMin.value);
+        idleVal.textContent = v + ' 分';
+        window.settingsAPI.set({ proactiveIdleMin: v });
+      });
+      screenshotQuality.addEventListener('input', () => {
+        qualityVal.textContent = screenshotQuality.value + '%';
+        window.settingsAPI.set({ screenshotQuality: Number(screenshotQuality.value) });
+      });
+      promptFold.addEventListener('click', () => {
+        promptFold.classList.toggle('open');
+        promptArea.style.display = promptFold.classList.contains('open') ? '' : 'none';
+      });
+      screenshotPrompt.addEventListener('change', () => {
+        const val = screenshotPrompt.value.trim();
+        window.settingsAPI.set({ screenshotPrompt: val === DEFAULT_SCREENSHOT_PROMPT ? '' : val });
+      });
+      screenPerception.addEventListener('change', () => {
+        window.settingsAPI.set({ screenPerception: screenPerception.checked });
+      });
+      proactiveUseMaster.addEventListener('change', () => {
+        window.settingsAPI.set({ proactiveUseMaster: proactiveUseMaster.checked });
+      });
+      function bindCam(slider, numInput, key, resetBtn) {
+        function sync(val) {
+          val = Math.max(-180, Math.min(180, Number(val) || 0));
+          slider.value = val;
+          numInput.value = val;
+          window.settingsAPI.set({ [key]: val });
+        }
+        slider.addEventListener('input', () => sync(slider.value));
+        numInput.addEventListener('change', () => sync(numInput.value));
+        resetBtn.addEventListener('click', () => sync(0));
+      }
+      bindCam(camPitch, pitchVal, 'camPitch', document.getElementById('reset-pitch'));
+      bindCam(camYaw,   yawVal,   'camYaw',   document.getElementById('reset-yaw'));
+      bindCam(camRoll,  rollVal,  'camRoll',  document.getElementById('reset-roll'));
+
+      // ---- 动画 ----
+      const randomAction = document.getElementById('randomAction');
+      const randomActionSec = document.getElementById('randomActionSec');
+      const randomSecVal = document.getElementById('random-sec-val');
+      const randomSecReset = document.getElementById('randomSecReset');
+      const randomStyleSel = document.getElementById('randomStyle');
+      const animListEl = document.getElementById('anim-list');
+      const animEmpty = document.getElementById('anim-empty');
+
+      // 原版风格下「自发」勾选不生效 → 禁用并置灰
+      function applySubsetEnabled() {
+        const on = randomStyleSel.value !== 'classic';
+        animListEl.querySelectorAll('label.anim-auto-lb').forEach((lb) => {
+          lb.style.opacity = on ? '0.85' : '0.3';
+          const cb = lb.querySelector('input.anim-auto');
+          if (cb) cb.disabled = !on;
+        });
+      }
+
+      randomAction.addEventListener('change', () => {
+        window.settingsAPI.set({ randomAction: randomAction.checked });
+      });
+      randomActionSec.addEventListener('input', () => {
+        randomSecVal.textContent = randomActionSec.value + 's';
+        window.settingsAPI.set({ randomActionSec: Number(randomActionSec.value) });
+      });
+      randomSecReset.addEventListener('click', () => {
+        randomActionSec.value = 60;
+        randomSecVal.textContent = '60s';
+        window.settingsAPI.set({ randomActionSec: 60 });
+      });
+      randomStyleSel.addEventListener('change', () => {
+        window.settingsAPI.set({ randomStyle: randomStyleSel.value });
+        applySubsetEnabled();
+      });
+
+      (async () => {
+        const s = await window.settingsAPI.get();
+        randomAction.checked = s.randomAction !== false;
+        randomActionSec.value = s.randomActionSec ?? 60;
+        randomSecVal.textContent = randomActionSec.value + 's';
+        randomStyleSel.value = s.randomStyle === 'classic' ? 'classic' : 'custom';
+
+        const items = await window.settingsAPI.getAnimList();
+        // 「自发」初始勾选:配了白名单 → 按白名单;未配(null)→ 除坐姿(picnic)外默认勾上
+        const sel = Array.isArray(s.randomActionAnims) ? new Set(s.randomActionAnims) : null;
+        const isAuto = (n) => (sel ? sel.has(n) : n !== 'picnic');
+        function saveAuto() {
+          const names = [...animListEl.querySelectorAll('input.anim-auto')]
+            .filter((c) => c.checked).map((c) => c.dataset.anim);
+          window.settingsAPI.set({ randomActionAnims: names });
+        }
+
+        animListEl.innerHTML = '';
+        if (!items || !items.length) {
+          animEmpty.textContent = '当前模型无可触发动画。';
+          animEmpty.style.display = '';
+        } else {
+          animEmpty.style.display = 'none';
+          for (const it of items) {
+            const name = typeof it === 'string' ? it : it.name;
+            const label = typeof it === 'string' ? it : (it.label || it.name);
+            const div = document.createElement('div');
+            div.className = 'mem-entry';
+            div.innerHTML =
+              `<label class="anim-auto-lb" style="display:flex;align-items:center;gap:3px;font-size:12px;flex:none;opacity:0.85">` +
+                `<input type="checkbox" class="anim-auto" data-anim="${escapeAttr(name)}"${isAuto(name) ? ' checked' : ''} />自发</label>` +
+              `<span class="mem-text" title="${escapeAttr(name)}">${escHtml(label)}</span>` +
+              `<button class="mem-del" data-anim="${escapeAttr(name)}">▶</button>`;
+            animListEl.appendChild(div);
+          }
+          animListEl.querySelectorAll('button[data-anim]').forEach((btn) => {
+            btn.addEventListener('click', () => window.settingsAPI.playAnim(btn.dataset.anim));
+          });
+          animListEl.querySelectorAll('input.anim-auto').forEach((cb) => {
+            cb.addEventListener('change', saveAuto);
+          });
+        }
+        applySubsetEnabled();
+      })();
+
+      // ---- AI 后端 ----
+      const chatBackend = document.getElementById('chatBackend');
+      const grpLmstudio = document.getElementById('grp-lmstudio');
+      const grpLms = document.getElementById('grp-lms');
+      const grpCommon = document.getElementById('grp-backend-common');
+      const externalBaseURL = document.getElementById('externalBaseURL');
+      const externalModel = document.getElementById('externalModel');
+      const lmsModel = document.getElementById('lmsModel');
+      const lmsRefreshModels = document.getElementById('lms-refresh-models');
+      const lmsPort = document.getElementById('lmsPort');
+      const lmsGpu = document.getElementById('lmsGpu');
+      const lmsCtx = document.getElementById('lmsCtx');
+      const lmsTtl = document.getElementById('lmsTtl');
+      const localMaxTokens = document.getElementById('localMaxTokens');
+      const lmsStartBtn = document.getElementById('lms-start');
+      const lmsStopBtn = document.getElementById('lms-stop');
+      const lmsStatusEl = document.getElementById('lms-status');
+      const lmsLogFold = document.getElementById('lms-log-fold');
+      const lmsLog = document.getElementById('lms-log');
+
+      function applyBackendVisibility() {
+        const v = chatBackend.value;
+        grpLmstudio.style.display = v === 'lmstudio' ? '' : 'none';
+        grpLms.style.display = v === 'lms' ? '' : 'none';
+        grpCommon.style.display = (v === 'lmstudio' || v === 'lms') ? '' : 'none';
+      }
+
+      function fillModelOptions(list, selected) {
+        const vals = Array.isArray(list) ? [...list] : [];
+        if (selected && !vals.includes(selected)) vals.unshift(selected);
+        lmsModel.innerHTML = '';
+        if (!vals.length) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = '(点刷新列出)';
+          lmsModel.appendChild(opt);
+        }
+        for (const m of vals) {
+          const opt = document.createElement('option');
+          opt.value = m;
+          opt.textContent = m;
+          lmsModel.appendChild(opt);
+        }
+        lmsModel.value = selected || '';
+      }
+      async function refreshModels() {
+        lmsRefreshModels.textContent = '…';
+        const list = await window.settingsAPI.lmsListModels();
+        fillModelOptions(list, lmsModel.value);
+        lmsRefreshModels.textContent = '刷新';
+      }
+
+      // 把 lms 输出里的 ANSI 颜色码(如 \x1b[91m ... \x1b[39m)转成带色 HTML,其余转义
+      const ANSI_COLORS = {
+        30: '#555', 31: '#e74c3c', 32: '#27ae60', 33: '#c9922b', 34: '#3498db',
+        35: '#9b59b6', 36: '#16a085', 37: '#bdc3c7',
+        90: '#7f8c8d', 91: '#ff6b5b', 92: '#2ecc71', 93: '#f1c40f', 94: '#5dade2',
+        95: '#c39bd3', 96: '#48c9b0', 97: '#ecf0f1',
+      };
+      function ansiToHtml(input) {
+        const esc = (t) => t
+          .replace(/\x1b\[[0-9;]*[A-Za-z]/g, '') // 去掉非颜色的控制序列(光标移动等)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const re = /\x1b\[([0-9;]*)m/g;
+        let out = '', last = 0, open = false, m;
+        while ((m = re.exec(input))) {
+          out += esc(input.slice(last, m.index));
+          last = re.lastIndex;
+          const codes = (m[1] ? m[1].split(';').map(Number) : [0]);
+          for (const c of codes) {
+            if (c === 0 || c === 39 || c === 49) {
+              if (open) { out += '</span>'; open = false; }
+            } else if (ANSI_COLORS[c]) {
+              if (open) out += '</span>';
+              out += `<span style="color:${ANSI_COLORS[c]}">`;
+              open = true;
+            }
+          }
+        }
+        out += esc(input.slice(last));
+        if (open) out += '</span>';
+        return out;
+      }
+
+      function renderLmsStatus(st) {
+        if (!st) return;
+        const map = { stopped: '已停止', starting: '启动中…', ready: '就绪', error: '出错' };
+        lmsStatusEl.textContent = (map[st.status] || st.status) + (st.error ? `(${st.error.slice(0, 40)})` : '');
+        if (st.logTail != null) lmsLog.innerHTML = ansiToHtml(st.logTail);
+      }
+
+      chatBackend.addEventListener('change', () => {
+        window.settingsAPI.set({ chatBackend: chatBackend.value });
+        applyBackendVisibility();
+        if (chatBackend.value === 'lms') refreshModels();
+      });
+      externalBaseURL.addEventListener('change', () => {
+        window.settingsAPI.set({ externalBaseURL: externalBaseURL.value.trim() });
+      });
+      externalModel.addEventListener('change', () => {
+        window.settingsAPI.set({ externalModel: externalModel.value.trim() });
+      });
+      lmsModel.addEventListener('change', () => {
+        window.settingsAPI.set({ lmsModel: lmsModel.value.trim() });
+      });
+      lmsRefreshModels.addEventListener('click', refreshModels);
+      lmsPort.addEventListener('change', () => {
+        window.settingsAPI.set({ lmsPort: Number(lmsPort.value) || 1234 });
+      });
+      lmsGpu.addEventListener('change', () => {
+        window.settingsAPI.set({ lmsGpu: lmsGpu.value.trim() || 'max' });
+      });
+      lmsCtx.addEventListener('change', () => {
+        window.settingsAPI.set({ lmsCtx: Number(lmsCtx.value) || 4096 });
+      });
+      lmsTtl.addEventListener('change', () => {
+        window.settingsAPI.set({ lmsTtl: Number(lmsTtl.value) || 0 });
+      });
+      localMaxTokens.addEventListener('change', () => {
+        window.settingsAPI.set({ localMaxTokens: Number(localMaxTokens.value) || 0 });
+      });
+      lmsStartBtn.addEventListener('click', async () => {
+        renderLmsStatus(await window.settingsAPI.lmsStart());
+      });
+      lmsStopBtn.addEventListener('click', async () => {
+        renderLmsStatus(await window.settingsAPI.lmsStop());
+      });
+      lmsLogFold.addEventListener('click', () => {
+        lmsLogFold.classList.toggle('open');
+        lmsLog.style.display = lmsLogFold.classList.contains('open') ? '' : 'none';
+      });
+      window.settingsAPI.onLmsStatus(renderLmsStatus);
+
+      (async () => {
+        const s = await window.settingsAPI.get();
+        chatBackend.value = s.chatBackend || 'cloud';
+        externalBaseURL.value = s.externalBaseURL || 'http://127.0.0.1:1234/v1';
+        externalModel.value = s.externalModel || '';
+        fillModelOptions([], s.lmsModel || '');
+        lmsPort.value = s.lmsPort ?? 1234;
+        lmsGpu.value = s.lmsGpu || 'max';
+        lmsCtx.value = s.lmsCtx ?? 4096;
+        lmsTtl.value = s.lmsTtl ?? 0;
+        localMaxTokens.value = s.localMaxTokens ?? 0;
+        applyBackendVisibility();
+        renderLmsStatus(await window.settingsAPI.lmsStatus());
+        if ((s.chatBackend || 'cloud') === 'lms') refreshModels();
+      })();
+
+      // 记忆管理
+      const memList = document.getElementById('mem-list');
+      const memEmpty = document.getElementById('mem-empty');
+      const memRefresh = document.getElementById('mem-refresh');
+      const memClearAll = document.getElementById('mem-clear-all');
+
+      async function loadMem() {
+        const entries = await window.settingsAPI.memoryGetAll();
+        memList.innerHTML = '';
+        if (!entries || !entries.length) {
+          memEmpty.style.display = '';
+          return;
+        }
+        memEmpty.style.display = 'none';
+        for (let i = 0; i < entries.length; i++) {
+          const e = entries[i];
+          const div = document.createElement('div');
+          div.className = 'mem-entry';
+          div.innerHTML =
+            `<span class="mem-time">${e.time || '?'}</span>` +
+            `<span class="mem-role ${e.role}">${e.role === 'user' ? '你' : '狐'}</span>` +
+            `<span class="mem-text" title="${escapeAttr(e.content || '')}">${escHtml(e.content || '').slice(0, 40)}</span>` +
+            `<button class="mem-del" data-idx="${i}">删</button>`;
+          memList.appendChild(div);
+        }
+        memList.querySelectorAll('.mem-del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            await window.settingsAPI.memoryRemove(Number(btn.dataset.idx));
+            loadMem();
+          });
+        });
+      }
+
+      function escHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      function escapeAttr(s) {
+        return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      memRefresh.addEventListener('click', loadMem);
+      memClearAll.addEventListener('click', async () => {
+        if (!confirm('确定清空全部记忆？')) return;
+        await window.settingsAPI.memoryClear();
+        loadMem();
+      });
+      loadMem();
+    </script>
+  </body>
+</html>
