@@ -19,16 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-NOTE: This MIT license covers ONLY the source code in this repository.
-
-The application, when built and distributed, bundles the "Wine Fox" (酒狐)
-3D model obtained from the `wine-fox` npm package. That model is licensed under
-Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC-BY-NC-SA 4.0).
-As a result, any packaged/distributed build of this application is for
-NON-COMMERCIAL use only, must credit the original model author, and any
-modification of the model must remain under CC-BY-NC-SA 4.0.
-
-See the "开源协议与致谢 / License & Credits" section of README.md for details.
