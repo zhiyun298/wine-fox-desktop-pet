@@ -36,9 +36,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-注意：`wine-fox` 包内附带的酒狐3D模型资源并非 MIT，而是
-**CC-BY-NC-SA 4.0**。本应用打包后内嵌该模型，
-故成品仅限非商业用途。详见根目录 `LICENSE` 与 `README.md`。
+注意：`wine-fox` 包内附带的酒狐模型资源并非 MIT，而是
+[**CC-BY-NC-SA 4.0**](https://creativecommons.org/licenses/by-nc-sa/4.0/)，来自[Yes Steve Model](https://modrinth.com/mod/yes-steve-model)。本应用打包后内嵌该模型，
+故成品仅限非商业用途。
 请以模型原作者/来源公布的许可与署名要求为准。
 
 ---
