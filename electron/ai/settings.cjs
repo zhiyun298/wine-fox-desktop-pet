@@ -26,6 +26,8 @@ const DEFAULTS = {
   randomStyle: 'custom',     // 随机风格:'custom'(勾选子集等概率一次性播) | 'classic'(库原版:心情加权+道具+80%不动)
   randomActionAnims: null,   // 允许自发触发的动画白名单(clip 名数组);null=默认(除坐姿外全允许)。仅 custom 风格生效
   chatBackend: 'cloud',      // 聊天后端:'cloud'(中转站) | 'lmstudio'(连接已运行的 LM Studio) | 'lms'(用 lms CLI 自动拉起并管理)
+  cloudBaseURL: '',          // 云端后端 API 地址;空 = 用 secret.json / 环境变量 / 内置默认(优先级最高,免重启)
+  cloudApiKey: '',           // 云端后端 API key;空 = 用 secret.json / 环境变量 AI_API_KEY
   localMaxTokens: 0,         // 回复最大 token 上限:0=不限(lmstudio/lms 生效)
   // 连接 LM Studio(仅连接已运行的本地服务器,不自己拉起)
   externalBaseURL: 'http://127.0.0.1:1234/v1', // LM Studio 本地服务地址

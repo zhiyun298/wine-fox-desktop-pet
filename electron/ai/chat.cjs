@@ -22,11 +22,12 @@ async function streamChat(messages, onToken, opts) {
     apiKey = '';
     model = s.externalModel || 'local';
   } else {
-    if (!cfg.apiKey) {
-      throw new Error('未配置 API key:请在 electron/ai/secret.json 填 apiKey,或设环境变量 AI_API_KEY');
+    // 云端:优先设置窗口填的 cloudBaseURL/cloudApiKey,其次 secret.json / 环境变量(见 config.cjs)
+    baseURL = (s.cloudBaseURL || cfg.baseURL || '').replace(/\/+$/, '');
+    apiKey = s.cloudApiKey || cfg.apiKey;
+    if (!apiKey) {
+      throw new Error('未配置 API key:请在「设置 → AI 后端 → 云端」填写,或在 %APPDATA%/wine-fox-desktop/secret.json 配置(也支持环境变量 AI_API_KEY)');
     }
-    baseURL = cfg.baseURL;
-    apiKey = cfg.apiKey;
     model = (opts && opts.model) || cfg.chatModel;
   }
 

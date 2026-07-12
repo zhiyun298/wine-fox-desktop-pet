@@ -56,19 +56,23 @@ async function captureAndAnalyze(modelOverride) {
 
     const cfg = loadConfig();
     const s = settings.getAll();
+    // 云端配置:优先设置窗口填的 cloudBaseURL/cloudApiKey,其次 secret.json / 环境变量
+    const baseURL = (s.cloudBaseURL || cfg.baseURL || '').replace(/\/+$/, '');
+    const apiKey = s.cloudApiKey || cfg.apiKey;
+    const model = modelOverride || s.visionModel || cfg.visionModel;
     const quality = s.screenshotQuality ?? 70;
     const prompt = s.screenshotPrompt || '用中文详细描述这张屏幕截图。包括:正在运行的应用程序、打开的窗口标题、大致内容(文字/图片/代码等)、以及当前可能在进行什么操作。描述要具体,直接说,不要前缀。';
     const buf = sources[0].thumbnail.toJPEG(quality);
     const b64 = buf.toString('base64');
 
-    const res = await fetch(`${cfg.baseURL}/chat/completions`, {
+    const res = await fetch(`${baseURL}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${cfg.apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: modelOverride || cfg.visionModel,
+        model,
         messages: [{
           role: 'user',
           content: [
