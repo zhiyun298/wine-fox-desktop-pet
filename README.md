@@ -48,7 +48,7 @@ pnpm install
 
    **注意：您要确保你的API提供商同时包含可供聊天使用的模型和可供图像分析使用的模型**
 
-   **如果你使用lmstudio，则无需配置secret.json，只需稍后在`右键菜单->设置->AI 后端`里选择`lmstudio`或lms**
+   **如果你使用lmstudio并且不需要截图分析，则无需配置secret.json，只需稍后在`右键菜单->设置->AI 后端`里选择`lmstudio`或lms**
 
 5. 运行
 ```bash
