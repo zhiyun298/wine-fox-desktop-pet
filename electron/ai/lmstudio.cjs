@@ -83,9 +83,9 @@ async function startServer() {
   return true; // 已在运行时 lms 也会正常返回,无害
 }
 
-// 模型名规范化:key 里的 @(量化变体分隔符)在 lms load 时需写成 -
+// 模型名规范化:去首尾空白,原样使用 key(含 @ 量化变体分隔符)
 function normalizeModel(m) {
-  return (m || '').trim().replace(/@/g, '-');
+  return (m || '').trim();
 }
 
 async function loadModel() {
