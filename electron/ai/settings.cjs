@@ -39,6 +39,7 @@ const DEFAULTS = {
   lmsCtx: 4096,              // 上下文长度(--context-length)
   lmsTtl: 0,                 // 空闲卸载秒数(--ttl),0=不设
   proactiveUseMaster: true,  // 主动搭话使用"主人"称呼
+  agentCwd: '',              // Claude Code Agent 工作目录;空 = 用 secret.json 的 agentCwd
   chatModel: '',             // 聊天模型;空 = 用 secret.json 的 chatModel
   visionModel: '',           // 截图分析模型;空 = 用 secret.json 的 visionModel
   camPitch: 0,               // 相机俯仰角(度),正=从上方看,负=从下方看

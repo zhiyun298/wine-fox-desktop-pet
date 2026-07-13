@@ -6,6 +6,7 @@
 // - 同类工具调用合并:Bash×5、Read×3 等,不堆叠重复行。
 const { spawn, execFile } = require('node:child_process');
 const { loadConfig } = require('./config.cjs');
+const settings = require('./settings.cjs');
 
 const CLAUDE = process.platform === 'win32' ? 'claude.cmd' : 'claude';
 
@@ -17,6 +18,7 @@ function runAgent(task, onToken) {
   return new Promise((resolve) => {
     aborted = false;
     const cfg = loadConfig();
+    const s = settings.getAll();
     const args = [
       '-p',
       '--output-format', 'stream-json',
@@ -26,7 +28,8 @@ function runAgent(task, onToken) {
     if (cfg.agentModel) args.push('--model', cfg.agentModel);
     if (sessionId) args.push('--resume', sessionId);
 
-    child = spawn(CLAUDE, args, { cwd: cfg.agentCwd, shell: true, windowsHide: true });
+    const cwd = s.agentCwd || cfg.agentCwd;
+    child = spawn(CLAUDE, args, { cwd, shell: true, windowsHide: true });
     child.stdin.write(task); // 任务走 stdin,避免注入
     child.stdin.end();
 
