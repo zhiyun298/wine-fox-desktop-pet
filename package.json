@@ -1,6 +1,6 @@
 {
 	"name": "wine-fox",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "酒狐桌宠",
 	"license": "MIT",
 	"main": "electron/main.cjs",
